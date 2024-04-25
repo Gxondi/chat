@@ -1,9 +1,26 @@
 package com.hyh.mallchat.common.user.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.hyh.mallchat.common.common.domain.dto.RequestInfo;
+import com.hyh.mallchat.common.common.domain.vo.resp.ApiResult;
+import com.hyh.mallchat.common.common.interceptor.TokenInterceptor;
+import com.hyh.mallchat.common.common.utils.RequestHolder;
+import com.hyh.mallchat.common.user.dao.UserDao;
+import com.hyh.mallchat.common.user.domain.entity.User;
+import com.hyh.mallchat.common.user.domain.vo.req.BadgesReq;
+import com.hyh.mallchat.common.user.domain.vo.req.ModifyNameReq;
+import com.hyh.mallchat.common.user.domain.vo.resp.BadgesResp;
+import com.hyh.mallchat.common.user.domain.vo.resp.UserInfoResp;
+import com.hyh.mallchat.common.user.service.UserService;
+import com.hyh.mallchat.common.user.service.adapter.UserAdapter;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.stereotype.Controller;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -13,9 +30,37 @@ import org.springframework.stereotype.Controller;
  * @author CondiX
  * @since 2024-04-07
  */
-@Controller
-@RequestMapping("/user")
+@RestController
+@Api(tags = "用户接口")
+@RequestMapping("capi/user")
 public class UserController {
+    public static final long UID = 10028L;
+    @Autowired
+    private UserService userService;
+    @GetMapping("/userInfo")
+    @ApiOperation("获取用户信息")
+    public ApiResult<UserInfoResp> getUserInfo() {
+        return ApiResult.success(userService.getUserInfo(RequestHolder.getRequestInfo().getUid()));
+    }
+    @PutMapping("/name")
+    @ApiOperation("修改用户名")
+    public ApiResult<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
+        userService.modifyName(RequestHolder.getRequestInfo().getUid(), req.getName());
+        return ApiResult.success();
+    }
+    @GetMapping("/badges")
+    @ApiOperation("可选徽章预览")
+    public ApiResult<List<BadgesResp>> badges() {
+        List<BadgesResp> badges = userService.badges(RequestHolder.getRequestInfo().getUid());
+        return ApiResult.success(badges);
+
+    }
+    @PutMapping("/badge")
+    @ApiOperation("佩戴徽章")
+    public ApiResult<Void> badge(@Valid @RequestBody BadgesReq req) {
+        userService.wringBadge(RequestHolder.getRequestInfo().getUid(),req.getId());
+        return ApiResult.success();
+    }
 
 }
 
