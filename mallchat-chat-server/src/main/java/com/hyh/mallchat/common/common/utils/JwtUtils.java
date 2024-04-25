@@ -14,11 +14,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Description: jwt的token生成与解析
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-04-03
- */
+
 @Slf4j
 @Component
 public class JwtUtils {

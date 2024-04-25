@@ -12,10 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-/**
- * @author <a href="https://github.com/zongzibinbin">abin</a>
- * @since 2023-03-19
- */
 @Data
 @ApiModel("游标翻页请求")
 @AllArgsConstructor

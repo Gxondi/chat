@@ -6,11 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-/**
- * Description: 通用返回体
- * Author: <a href="https://github.com/zongzibinbin">abin</a>
- * Date: 2023-03-23
- */
 @Data
 @ApiModel("基础返回体")
 public class ApiResult<T> {
