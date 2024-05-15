@@ -1,16 +1,23 @@
 package com.hyh.mallchat.common.user.controller;
 
 
+import com.hyh.mallchat.common.common.annotation.RedissonLock;
 import com.hyh.mallchat.common.common.domain.dto.RequestInfo;
+import com.hyh.mallchat.common.common.domain.enums.RoleEnum;
 import com.hyh.mallchat.common.common.domain.vo.resp.ApiResult;
 import com.hyh.mallchat.common.common.interceptor.TokenInterceptor;
+import com.hyh.mallchat.common.common.utils.AssertUtil;
 import com.hyh.mallchat.common.common.utils.RequestHolder;
 import com.hyh.mallchat.common.user.dao.UserDao;
+import com.hyh.mallchat.common.user.domain.entity.Black;
 import com.hyh.mallchat.common.user.domain.entity.User;
 import com.hyh.mallchat.common.user.domain.vo.req.BadgesReq;
+import com.hyh.mallchat.common.user.domain.vo.req.BlackReq;
 import com.hyh.mallchat.common.user.domain.vo.req.ModifyNameReq;
 import com.hyh.mallchat.common.user.domain.vo.resp.BadgesResp;
 import com.hyh.mallchat.common.user.domain.vo.resp.UserInfoResp;
+import com.hyh.mallchat.common.user.service.IBlackService;
+import com.hyh.mallchat.common.user.service.IRoleService;
 import com.hyh.mallchat.common.user.service.UserService;
 import com.hyh.mallchat.common.user.service.adapter.UserAdapter;
 import io.swagger.annotations.Api;
@@ -37,6 +44,10 @@ public class UserController {
     public static final long UID = 10028L;
     @Autowired
     private UserService userService;
+    @Autowired
+    private IRoleService roleService;
+    @Autowired
+    private IBlackService blackService;
     @GetMapping("/userInfo")
     @ApiOperation("获取用户信息")
     public ApiResult<UserInfoResp> getUserInfo() {
@@ -59,6 +70,16 @@ public class UserController {
     @ApiOperation("佩戴徽章")
     public ApiResult<Void> badge(@Valid @RequestBody BadgesReq req) {
         userService.wringBadge(RequestHolder.getRequestInfo().getUid(),req.getId());
+        return ApiResult.success();
+    }
+    @PutMapping("/black")
+    @ApiOperation("拉黑")
+    public ApiResult<Void> black(@RequestBody BlackReq req) {
+        Long uid = RequestHolder.getRequestInfo().getUid();
+        boolean hasPower = roleService.hasPower(uid, RoleEnum.ADMIN);
+        AssertUtil.isTrue(hasPower, "您咩有拉黑权限呢!!!!");
+        Black blackUser = blackService.getBlackUser(req);
+        blackService.back(req);
         return ApiResult.success();
     }
 

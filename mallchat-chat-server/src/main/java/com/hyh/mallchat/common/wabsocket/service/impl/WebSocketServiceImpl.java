@@ -5,10 +5,17 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.hyh.mallchat.common.common.domain.dto.RequestInfo;
+import com.hyh.mallchat.common.common.domain.enums.RoleEnum;
+import com.hyh.mallchat.common.common.event.UserOnlineEvent;
+import com.hyh.mallchat.common.common.utils.RequestHolder;
 import com.hyh.mallchat.common.user.dao.UserDao;
+import com.hyh.mallchat.common.user.domain.entity.IpInfo;
 import com.hyh.mallchat.common.user.domain.entity.User;
+import com.hyh.mallchat.common.user.service.IRoleService;
 import com.hyh.mallchat.common.user.service.LoginService;
 import com.hyh.mallchat.common.user.service.WxMsgService;
+import com.hyh.mallchat.common.wabsocket.NettyUtil;
 import com.hyh.mallchat.common.wabsocket.adapter.WebSocketAdapter;
 import com.hyh.mallchat.common.wabsocket.domain.dto.WSChannelExtraDTO;
 import com.hyh.mallchat.common.wabsocket.domain.vo.req.WSBaseReq;
@@ -22,10 +29,13 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -55,7 +65,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private LoginService loginService;
-
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Autowired
+    private IRoleService roleService;
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Override
     public void connect(Channel channel) {
         ONLINE_WS_MAP.put(channel, new WSChannelExtraDTO());
@@ -100,6 +115,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
         //调用登录成功的业务逻辑
         User user = userDao.getById(uid);
+        //删除code
         WAIT_LOGIN_MAP.invalidate(code);
         //获取token
         String token = loginService.login(uid);
@@ -139,6 +155,20 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
     }
 
+    @Override
+    public void sendMsgToAll(WSBaseResp<?> msg) {
+        ONLINE_WS_MAP.forEach((channel, ext) -> {
+            threadPoolTaskExecutor.execute(() -> {
+                sendMsg(channel, msg);
+            });
+        });
+    }
+
+    @Override
+    public void sendPushMsg(Long targetId, WSBaseResp<?> wsBaseResp) {
+
+    }
+
     private void loginSuccess(Channel channel, User user, String token) {
         /**
          * 1.给前端发送登录成功的消息
@@ -146,7 +176,12 @@ public class WebSocketServiceImpl implements WebSocketService {
          */
         WSChannelExtraDTO wsChannelExtraDTO = ONLINE_WS_MAP.get(channel);
         wsChannelExtraDTO.setUid(user.getId());
-        sendMsg(channel, WebSocketAdapter.buildResp(user, token));
+        sendMsg(channel, WebSocketAdapter.buildResp(user, token,roleService.hasPower(user.getId(), RoleEnum.CHAT_MANAGER)));
+        //用户上线事件通知
+        user.setLastOptTime(new Date());
+        String ip= NettyUtil.getAttr(channel, NettyUtil.IP);
+        user.refreshIp(ip);
+        applicationEventPublisher.publishEvent(new UserOnlineEvent(this,user));
     }
 
 

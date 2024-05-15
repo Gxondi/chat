@@ -1,6 +1,8 @@
 package com.hyh.mallchat.common.common.domain.vo.resp;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hyh.mallchat.common.user.domain.entity.UserApply;
+import com.hyh.mallchat.common.user.domain.vo.resp.FriendApplyResp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -73,4 +75,5 @@ public class PageBaseResp<T> {
         long pageTotal = totalRecords / pageSize + (totalRecords % pageSize == 0 ? 0 : 1);
         return pageNo >= pageTotal ? true : false;
     }
+
 }

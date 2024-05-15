@@ -2,8 +2,11 @@ package com.hyh.mallchat.common.user.service.impl;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import com.hyh.mallchat.common.common.annotation.RedissonLock;
 import com.hyh.mallchat.common.common.domain.enums.ItemEnum;
 import com.hyh.mallchat.common.common.domain.enums.ItemTypeEnum;
+import com.hyh.mallchat.common.common.domain.enums.RoleEnum;
+import com.hyh.mallchat.common.common.event.RegisterEvent;
 import com.hyh.mallchat.common.common.exception.BusinessException;
 import com.hyh.mallchat.common.common.exception.CommonErrorEnum;
 import com.hyh.mallchat.common.common.utils.AssertUtil;
@@ -19,6 +22,7 @@ import com.hyh.mallchat.common.user.service.UserService;
 import com.hyh.mallchat.common.user.service.adapter.UserAdapter;
 import com.hyh.mallchat.common.user.service.cache.ItemCache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +42,26 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ItemConfigDao itemConfigDao;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
+    /**
+     * 注册事件是需要被人监听的
+     * 一旦该方法被调用执行，监听此事件的方法要做出反应比如主动发放积分，勋章等等一系列的任务
+     * @param insert
+     * @return
+     */
     @Override
     @Transactional
     public Long register(User insert) {
         boolean save = userDao.save(insert);
         //TODO 用户注册事件
+        /**
+         * 事件的订阅者想知道是从那个类发出来的（this）
+         * 使用springboot的事件，是不可靠的发送。
+         * 如果在事务内发送的MQ，如果方法回查，注册是空的，事务还没有提交成功
+         */
+        applicationEventPublisher.publishEvent(new RegisterEvent(this,insert));
         return insert.getId();
     }
 
@@ -59,6 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @RedissonLock(key = "#uid")
     public void modifyName(Long uid, String name) {
         User oldUser = userDao.getByName(name);
         //判断名字是不是重复
@@ -88,7 +107,7 @@ public class UserServiceImpl implements UserService {
         //查询用户拥有的徽章
         List<UserBackpack> backpacks = userBackpackDao.getByItemIds(uid, badges.stream().map(ItemConfig::getId).collect(Collectors.toList()));
         //获取用户
-        User user = userDao.getById(10028L);
+        User user = userDao.getById(uid);
         //组装
         return UserAdapter.buildBadgesResp(badges, backpacks, user);
     }
@@ -107,5 +126,7 @@ public class UserServiceImpl implements UserService {
         AssertUtil.equal(itemConfig.getType(), ItemTypeEnum.BADGE.getType(), "只有徽章才能佩戴");
         userDao.wringBadge(uid, item.getItemId());
     }
+
+
 
 }

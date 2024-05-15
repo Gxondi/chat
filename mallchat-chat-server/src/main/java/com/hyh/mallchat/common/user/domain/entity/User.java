@@ -3,14 +3,18 @@ package com.hyh.mallchat.common.user.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import java.io.Serializable;
+import java.util.Date;
 
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -22,8 +26,10 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("user")
+@TableName(value = "user", autoResultMap = true) //字段类型处理器
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,7 +37,7 @@ public class User implements Serializable {
     /**
      * 用户id
      */
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
@@ -68,13 +74,20 @@ public class User implements Serializable {
      * 最后上下线时间
      */
     @TableField("last_opt_time")
-    private LocalDateTime lastOptTime;
+    private Date lastOptTime;
 
     /**
      * ip信息
      */
-    @TableField("ip_info")
-    private String ipInfo;
+    @TableField(value = "ip_info", typeHandler = JacksonTypeHandler.class) //解析成jason格式
+    private IpInfo ipInfo;
+
+    public void refreshIp(String ip) {
+        if (ipInfo == null) {
+            ipInfo = new IpInfo();
+            ipInfo.refreshIp(ip);
+        }
+    }
 
     /**
      * 佩戴的徽章id
@@ -99,4 +112,6 @@ public class User implements Serializable {
      */
     @TableField("update_time")
     private LocalDateTime updateTime;
+
+
 }

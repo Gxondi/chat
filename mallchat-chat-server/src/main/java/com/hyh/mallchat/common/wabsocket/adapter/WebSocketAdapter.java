@@ -1,13 +1,9 @@
 package com.hyh.mallchat.common.wabsocket.adapter;
 
-import cn.hutool.json.JSONUtil;
+import com.hyh.mallchat.common.common.domain.enums.YesOrNoEnum;
 import com.hyh.mallchat.common.user.domain.entity.User;
 import com.hyh.mallchat.common.wabsocket.domain.enums.WSRespTypeEnum;
-import com.hyh.mallchat.common.wabsocket.domain.vo.resp.WSBaseResp;
-import com.hyh.mallchat.common.wabsocket.domain.vo.resp.WSLoginSuccess;
-import com.hyh.mallchat.common.wabsocket.domain.vo.resp.WSLoginUrl;
-import io.netty.channel.Channel;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import com.hyh.mallchat.common.wabsocket.domain.vo.resp.*;
 import me.chanjar.weixin.mp.bean.result.WxMpQrCodeTicket;
 
 public class WebSocketAdapter {
@@ -19,7 +15,7 @@ public class WebSocketAdapter {
         return  resp;
     }
 
-    public static WSBaseResp<?> buildResp(User user, String token) {
+    public static WSBaseResp<?> buildResp(User user, String token,boolean hasPower) {
         WSBaseResp<WSLoginSuccess> resp = new WSBaseResp();
         resp.setType(WSRespTypeEnum.LOGIN_SUCCESS.getType());
         WSLoginSuccess wsLoginSuccess = new WSLoginSuccess();
@@ -27,6 +23,7 @@ public class WebSocketAdapter {
         wsLoginSuccess.setToken(token);
         wsLoginSuccess.setName(user.getName());
         wsLoginSuccess.setAvatar(user.getAvatar());
+        wsLoginSuccess.setPower(hasPower? YesOrNoEnum.YES.getStatus() : YesOrNoEnum.NO.getStatus());
         resp.setData(wsLoginSuccess);
         return  resp;
     }
@@ -43,6 +40,31 @@ public class WebSocketAdapter {
     public static WSBaseResp<?> buildInvalidTokenResp() {
         WSBaseResp<WSLoginUrl> resp = new WSBaseResp();
         resp.setType(WSRespTypeEnum.INVALIDATE_TOKEN.getType());
+        return resp;
+    }
+
+    /**
+     * 用户被拉黑
+     * @param id
+     * @return
+     */
+    public static WSBaseResp<?> buildBlack(Long id) {
+        WSBaseResp<WSBlack> resp = new WSBaseResp();
+        resp.setType(WSRespTypeEnum.BLACK.getType());
+        WSBlack wsBlack = new WSBlack();
+        wsBlack.setUid(id);
+        resp.setData(wsBlack);
+        return  resp;
+    }
+
+
+    public static WSBaseResp<?> buildUserApplyMsg(Long uid, Integer unReadCount) {
+        WSBaseResp<WSFriendApply> resp = new WSBaseResp();
+        WSFriendApply wsFriendApply = new WSFriendApply();
+        wsFriendApply.setUid(uid);
+        wsFriendApply.setUnreadCount(unReadCount);
+        resp.setData(wsFriendApply);
+        resp.setType(WSRespTypeEnum.APPLY.getType());
         return resp;
     }
 }

@@ -38,6 +38,20 @@ public class ThreadPoolConfig implements AsyncConfigurer {
         executor.setQueueCapacity(200);
         executor.setThreadNamePrefix("mallchat-executor-");
         executor.setThreadFactory(new MyThreadFactory(executor));//线程工厂
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());//满了丢弃
+        executor.initialize();
+        return executor;
+    }
+
+    @Bean(WS_EXECUTOR)
+    public ThreadPoolTaskExecutor websocketExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setWaitForTasksToCompleteOnShutdown(true);//优雅关闭线程
+        executor.setCorePoolSize(16);
+        executor.setMaxPoolSize(16);
+        executor.setQueueCapacity(200);
+        executor.setThreadNamePrefix("websocket-executor-");
+        executor.setThreadFactory(new MyThreadFactory(executor));//线程工厂
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());//满了调用线程执行，认为重要任务
         executor.initialize();
         return executor;

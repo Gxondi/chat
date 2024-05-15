@@ -52,7 +52,7 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
      */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-
+        //ServerHandshakeStateEvent-》服务器握手状态事件 HANDSHAKE_COMPLETE-》握手完成
         if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
             System.out.println("握手请求");
             String token = NettyUtil.getAttr(ctx.channel(), NettyUtil.TOKEN);

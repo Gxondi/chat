@@ -4,6 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.hyh.mallchat.common.user.dao.UserDao;
 import com.hyh.mallchat.common.user.domain.entity.User;
+import com.hyh.mallchat.common.user.service.IRoleService;
+import com.hyh.mallchat.common.user.service.IUserRoleService;
 import com.hyh.mallchat.common.user.service.UserService;
 import com.hyh.mallchat.common.user.service.WxMsgService;
 import com.hyh.mallchat.common.user.service.adapter.TextBuilder;
@@ -38,6 +40,8 @@ public class WxMsgServiceImpl implements WxMsgService {
     private WxMpService wxMpService;
     @Autowired
     private WebSocketService webSocketService;
+    @Autowired
+    private IUserRoleService userRoleService;
     private static final ConcurrentMap<String, Integer> WAIT_AUTHORIZE_MAP = new ConcurrentHashMap<>();
     @Value("${wx.mp.callback}")
     private String callback;
@@ -73,7 +77,9 @@ public class WxMsgServiceImpl implements WxMsgService {
         if (!registered) {
             //注册用户往数据库内添加数据
             User insert = UserAdapter.buildUserSave(openId);
-            userService.register(insert);
+            Long register = userService.register(insert);
+
+
         }
         //等待用户授权过程中临时保存openId和code的映射关系
         WAIT_AUTHORIZE_MAP.put(openId, code);

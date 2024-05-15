@@ -1,5 +1,6 @@
 package com.hyh.mallchat.common.user.service;
 
+import com.hyh.mallchat.common.common.domain.enums.RoleEnum;
 import com.hyh.mallchat.common.user.domain.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hyh.mallchat.common.user.domain.vo.resp.BadgesResp;
@@ -26,4 +27,5 @@ public interface UserService {
     List<BadgesResp> badges(Long uid);
 
     void wringBadge(Long uid, Long id);
+
 }

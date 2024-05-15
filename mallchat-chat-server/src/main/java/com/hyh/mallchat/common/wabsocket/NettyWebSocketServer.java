@@ -63,6 +63,7 @@ public class NettyWebSocketServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        //流水线
                         ChannelPipeline pipeline = socketChannel.pipeline();
                         //30秒客户端没有向服务器发送心跳则关闭连接
                         //pipeline.addLast(new IdleStateHandler(30, 0, 0));

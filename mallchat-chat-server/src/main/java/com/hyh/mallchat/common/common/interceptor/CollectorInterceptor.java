@@ -20,6 +20,7 @@ public class CollectorInterceptor implements HandlerInterceptor {
         Long uid = Optional.ofNullable(attribute).map(Object::toString).map(Long::parseLong).orElse(null);
         RequestInfo requestInfo = new RequestInfo();
         requestInfo.setUid(uid);
+        //协议升级之前取得ip
         requestInfo.setIp(ServletUtil.getClientIP(request));
         RequestHolder.setRequestInfo(requestInfo);
         return true;

@@ -1,12 +1,11 @@
 package com.hyh.mallchat.common.user.dao;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.hyh.mallchat.common.common.domain.enums.YesOrNoEnum;
 import com.hyh.mallchat.common.user.domain.entity.User;
-import com.hyh.mallchat.common.user.domain.entity.UserBackpack;
 import com.hyh.mallchat.common.user.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -42,5 +41,19 @@ public class UserDao extends ServiceImpl<UserMapper, User> {
                 .eq(User::getId,uid)
                 .set(User::getItemId,itemId)
                 .update();
+    }
+
+    public void updateStatus(Long id) {
+        lambdaUpdate()
+                .eq(User::getId,id)
+                .set(User::getStatus, 1)
+                .update();
+    }
+
+    public List<User> getFriendList(List<Long> friendIds) {
+        return lambdaQuery()
+                .in(User::getId, friendIds)
+                .select(User::getId, User::getName, User::getAvatar, User::getActiveStatus)
+                .list();
     }
 }

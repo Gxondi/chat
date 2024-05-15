@@ -39,8 +39,8 @@ public class DaoTest {
     private IUserBackpackService iUserBackpackService;
     @Test
     public void test(){
-        String login = loginService.login(10028L);
-        //Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjEwMDI4LCJjcmVhdGVUaW1lIjoxNzEzNTA4MDU3fQ.VNrzOm4Km11cQ-GRRAY8e0rc_NG61FdlXUeEIyADc3w
+        String login = loginService.login(20000L);
+        //Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjIwMDAwLCJjcmVhdGVUaW1lIjoxNzE0MzA4NDM2fQ.7H_j6lGWcIXDwbKrfinpxd85mvCssWEU2hVGihDpsfc
         System.out.println(login);
     }
     @Test
