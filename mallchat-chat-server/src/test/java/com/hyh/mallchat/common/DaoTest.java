@@ -9,7 +9,11 @@ import com.hyh.mallchat.common.user.domain.entity.User;
 import com.hyh.mallchat.common.user.domain.entity.UserBackpack;
 import com.hyh.mallchat.common.user.service.IUserBackpackService;
 import com.hyh.mallchat.common.user.service.LoginService;
+import com.hyh.mallchat.oss.MinIOTemplate;
+import com.hyh.mallchat.oss.domain.OssReq;
+import io.minio.MinioClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.redisson.Redisson;
@@ -18,6 +22,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -25,11 +31,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @Slf4j
 public class DaoTest {
-    public static final long UID = 10028L;
+    public static final long UID = 20001;
     @Autowired
     private UserDao userDao;
 
-
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -37,10 +44,12 @@ public class DaoTest {
     private LoginService loginService;
     @Autowired
     private IUserBackpackService iUserBackpackService;
+    @Autowired
+    private MinIOTemplate minIOTemplate;
     @Test
     public void test(){
-        String login = loginService.login(20000L);
-        //Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjIwMDAwLCJjcmVhdGVUaW1lIjoxNzE0MzA4NDM2fQ.7H_j6lGWcIXDwbKrfinpxd85mvCssWEU2hVGihDpsfc
+        String login = loginService.login(UID);
+        //Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOjIxMTExLCJjcmVhdGVUaW1lIjoxNzE2Mjk0NTgzfQ.ZDY24I05EqjjHYqFsCYXsqJx8fq_6ZVD7e5ek1xE-Ug
         System.out.println(login);
     }
     @Test
@@ -54,8 +63,24 @@ public class DaoTest {
         System.out.println(validUid);
 
     }
+    @Test
+    public void oss() {
+        OssReq ossReq = OssReq.builder()
+                .fileName("test.jpeg")
+                .filePath("/test")
+                .autoPath(false)
+                .build();
+        minIOTemplate.getPreSignedObjectUrl(ossReq);
+
+    }
     @Autowired
     private RedissonClient redissonClient;
+
+    @Test
+    public void sendMQ() {
+        Message<String> build = MessageBuilder.withPayload("123").build();
+        rocketMQTemplate.send("hyh-topic", build);
+    }
     @Test
     public void redission() {
         RLock lock = redissonClient.getLock("123");

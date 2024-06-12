@@ -1,9 +1,7 @@
 package com.hyh.mallchat.common.user.service.cache;
 
-import com.hyh.mallchat.common.common.domain.enums.ItemTypeEnum;
 import com.hyh.mallchat.common.user.dao.ItemConfigDao;
 import com.hyh.mallchat.common.user.domain.entity.ItemConfig;
-import com.hyh.mallchat.common.user.service.IItemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,5 +19,9 @@ public class ItemCache {
     }
     @CacheEvict(cacheNames = "item", key = "'itemByType:'+#type") // 清除缓存
     public void clearByType(Integer type) {
+    }
+    @Cacheable(cacheNames = "item", key = "'itemByi=ItemId:'+#itemId") // 获取缓存
+    public ItemConfig getByItemId(Long itemId) {
+        return itemConfigDao.getById(itemId);
     }
 }

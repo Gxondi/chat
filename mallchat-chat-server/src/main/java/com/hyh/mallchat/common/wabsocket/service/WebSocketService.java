@@ -21,5 +21,9 @@ public interface WebSocketService {
 
     void sendMsgToAll(WSBaseResp<?> msg);
 
-    void sendPushMsg(Long targetId, WSBaseResp<?> wsBaseResp);
+    void sendToUid(WSBaseResp<?> wsBaseMsg, Long uid);
+
+    void sendToAllOnline(WSBaseResp<?> wsBaseResp);
+
+    void sendToAllOnline(WSBaseResp<?> wsBaseMsg, Long skipUid);
 }

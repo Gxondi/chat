@@ -1,13 +1,9 @@
 package com.hyh.mallchat.common.user.dao;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hyh.mallchat.common.common.domain.enums.YesOrNoEnum;
 import com.hyh.mallchat.common.user.domain.entity.UserBackpack;
 import com.hyh.mallchat.common.user.mapper.UserBackpackMapper;
-import com.hyh.mallchat.common.user.service.IUserBackpackService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.swagger.models.auth.In;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -73,7 +69,12 @@ public class UserBackpackDao extends ServiceImpl<UserBackpackMapper, UserBackpac
                 .list();
     }
 
-
+    public List<UserBackpack> getByItemIds(List<Long> uid, List<Long> itemIds) {
+        return lambdaQuery().in(UserBackpack::getUid, uid)
+                .in(UserBackpack::getItemId, itemIds)
+                .eq(UserBackpack::getStatus, YesOrNoEnum.NO.getStatus()) //有效徽章
+                .list();
+    }
     public UserBackpack getIdempotent(String idempotent) {
         return lambdaQuery().eq(UserBackpack::getIdempotent,idempotent).one();
     }

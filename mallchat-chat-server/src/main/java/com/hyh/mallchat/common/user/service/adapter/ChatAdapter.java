@@ -1,10 +1,10 @@
 package com.hyh.mallchat.common.user.service.adapter;
 
 import com.hyh.mallchat.common.common.domain.enums.RoomHotFlagEnum;
-import com.hyh.mallchat.common.common.domain.enums.RoomNormalOrNoEnum;
+import com.hyh.mallchat.common.common.domain.enums.NormalOrNoEnum;
 import com.hyh.mallchat.common.common.domain.enums.RoomTypeEnum;
-import com.hyh.mallchat.common.user.domain.entity.Room;
-import com.hyh.mallchat.common.user.domain.entity.RoomFriend;
+import com.hyh.mallchat.common.chat.domain.entity.Room;
+import com.hyh.mallchat.common.chat.domain.entity.RoomFriend;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public class ChatAdapter {
         roomFriend.setRoomKey(generateRoomKey(uidList));
         roomFriend.setUid1(collect.get(0));
         roomFriend.setUid2(collect.get(1));
-        roomFriend.setStatus(RoomNormalOrNoEnum.NORMAL.getType());
+        roomFriend.setStatus(NormalOrNoEnum.NORMAL.getStatus());
         return roomFriend;
     }
 }

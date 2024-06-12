@@ -1,6 +1,4 @@
 package com.hyh.mallchat.common.user.controller;
-
-
 import com.hyh.mallchat.common.common.domain.vo.req.CursorPageBaseReq;
 import com.hyh.mallchat.common.common.domain.vo.req.PageBaseReq;
 import com.hyh.mallchat.common.common.domain.vo.resp.ApiResult;
@@ -20,9 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.stereotype.Controller;
-
 import javax.validation.Valid;
 
 /**

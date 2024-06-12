@@ -18,7 +18,7 @@
 
     <modules>
         <module>mallchat-chat-server</module>
-        <module>mallchat-framwork</module>
+        <module>mallchat-framework</module>
     </modules>
 
     <properties>

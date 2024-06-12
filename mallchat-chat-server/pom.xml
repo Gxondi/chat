@@ -22,6 +22,14 @@
             <artifactId>mallchat-common-starter</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.hyh</groupId>
+            <artifactId>mallchat-oss-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hyh</groupId>
+            <artifactId>mallchat-transaction</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.knuddels</groupId>
             <artifactId>jtokkit</artifactId>
             <version>0.6.1</version>
@@ -45,6 +53,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
         </dependency>
+
     </dependencies>
 
 

@@ -1,6 +1,7 @@
 package com.hyh.mallchat.common.user.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.hyh.mallchat.common.common.constant.RedisKey;
 import com.hyh.mallchat.common.common.utils.JwtUtils;
@@ -19,7 +20,12 @@ public class LoginServiceImpl implements LoginService {
     private JwtUtils jwtUtils;
     @Override
     public String login(Long uid) {
-        String token = jwtUtils.createToken(uid);
+        String key = RedisKey.getKey(RedisKey.USER_TOKEN_STRING, uid);
+        String token = RedisUtils.getStr(key);
+        if (StrUtil.isNotBlank(token)) {
+            return token;
+        }
+        token = jwtUtils.createToken(uid);
         RedisUtils.set(getUserTokenKey(uid), token, TOKEN_EXPIRE_DAYS, TimeUnit.DAYS);
         return token;
     }

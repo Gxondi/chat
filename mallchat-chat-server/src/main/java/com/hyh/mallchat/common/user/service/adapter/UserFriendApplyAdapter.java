@@ -8,19 +8,20 @@ import com.hyh.mallchat.common.common.domain.vo.resp.PageBaseResp;
 import com.hyh.mallchat.common.user.domain.entity.UserApply;
 import com.hyh.mallchat.common.user.domain.vo.req.FriendApplyReq;
 import com.hyh.mallchat.common.user.domain.vo.resp.FriendApplyResp;
+import com.hyh.mallchat.common.user.service.cache.UserCache;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserFriendApplyAdapter {
+
     public static List<FriendApplyResp> buildFriendApplyResp(List<UserApply> records) {
         List<FriendApplyResp> collect = records.stream().map(item -> {
             FriendApplyResp friendApplyResp = new FriendApplyResp();
             friendApplyResp.setApplyId(item.getId());
             friendApplyResp.setUid(item.getUid());
-            //TODO 缓存
-//            friendApplyResp.setName(item.getMsg());
-//            friendApplyResp.setAvatar(item.getAvatar());
+            friendApplyResp.setType(item.getType());
             friendApplyResp.setMsg(item.getMsg());
             friendApplyResp.setStatus(item.getStatus());
             return friendApplyResp;

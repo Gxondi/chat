@@ -9,11 +9,11 @@ import com.hyh.mallchat.common.common.interceptor.TokenInterceptor;
 import com.hyh.mallchat.common.common.utils.AssertUtil;
 import com.hyh.mallchat.common.common.utils.RequestHolder;
 import com.hyh.mallchat.common.user.dao.UserDao;
+import com.hyh.mallchat.common.user.domain.dto.ItemInfoDTO;
+import com.hyh.mallchat.common.user.domain.dto.SummaryInfoDTO;
 import com.hyh.mallchat.common.user.domain.entity.Black;
 import com.hyh.mallchat.common.user.domain.entity.User;
-import com.hyh.mallchat.common.user.domain.vo.req.BadgesReq;
-import com.hyh.mallchat.common.user.domain.vo.req.BlackReq;
-import com.hyh.mallchat.common.user.domain.vo.req.ModifyNameReq;
+import com.hyh.mallchat.common.user.domain.vo.req.*;
 import com.hyh.mallchat.common.user.domain.vo.resp.BadgesResp;
 import com.hyh.mallchat.common.user.domain.vo.resp.UserInfoResp;
 import com.hyh.mallchat.common.user.service.IBlackService;
@@ -53,25 +53,38 @@ public class UserController {
     public ApiResult<UserInfoResp> getUserInfo() {
         return ApiResult.success(userService.getUserInfo(RequestHolder.getRequestInfo().getUid()));
     }
-    @PutMapping("/name")
-    @ApiOperation("修改用户名")
-    public ApiResult<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
-        userService.modifyName(RequestHolder.getRequestInfo().getUid(), req.getName());
-        return ApiResult.success();
+    @GetMapping("/public/summary/getUserInfo/batch")
+    @ApiOperation("用户聚合信息-返回的代表需要刷新的")
+    public ApiResult<List<SummaryInfoDTO>> getSummaryUserInfo(@Valid @RequestBody SummeryInfoReq req) {
+        return ApiResult.success(userService.getSummaryUserInfo(req));
     }
     @GetMapping("/badges")
     @ApiOperation("可选徽章预览")
     public ApiResult<List<BadgesResp>> badges() {
         List<BadgesResp> badges = userService.badges(RequestHolder.getRequestInfo().getUid());
         return ApiResult.success(badges);
-
     }
+    @GetMapping("/public/badges/batch")
+    @ApiOperation("用户聚合信息-返回的代表需要刷新的")
+    public ApiResult<List<ItemInfoDTO>> getItemInfo(@Valid @RequestBody ItemInfoReq req) {
+        return ApiResult.success(userService.getItemInfo(req));
+    }
+
+
     @PutMapping("/badge")
     @ApiOperation("佩戴徽章")
     public ApiResult<Void> badge(@Valid @RequestBody BadgesReq req) {
         userService.wringBadge(RequestHolder.getRequestInfo().getUid(),req.getId());
         return ApiResult.success();
     }
+
+    @PutMapping("/name")
+    @ApiOperation("修改用户名")
+    public ApiResult<Void> modifyName(@Valid @RequestBody ModifyNameReq req) {
+        userService.modifyName(RequestHolder.getRequestInfo().getUid(), req.getName());
+        return ApiResult.success();
+    }
+
     @PutMapping("/black")
     @ApiOperation("拉黑")
     public ApiResult<Void> black(@RequestBody BlackReq req) {
