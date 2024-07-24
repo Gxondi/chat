@@ -118,8 +118,9 @@ public class SecureInvokeService {
             Class<?> beanClass = Class.forName(secureInvokeDTO.getClassName());
             Object bean = SpringUtil.getBean(beanClass);
             List<String> parameterStrings = JsonUtils.toList(secureInvokeDTO.getParameterTypes(), String.class);
+            //获取参数类型 String.class
             List<Class<?>> parameterClasses = getParameters(parameterStrings);
-            // 通过bean名，方法名，以及参数 获取方法
+            // 通过bean名，方法名，以及参数类型 获取方法
             Method method = ReflectUtil.getMethod(beanClass, secureInvokeDTO.getMethodName(), parameterClasses.toArray(new Class[]{}));
             Object[] args = getArgs(secureInvokeDTO, parameterClasses);
             // 执行方法

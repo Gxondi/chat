@@ -65,6 +65,7 @@ public class WxPortalController {
      */
     @GetMapping("/callBack")
     public RedirectView callBack(@RequestParam String code) {
+        System.out.println("code:" + code);
         try {
             //点击授权登录转到到此方法
             WxOAuth2AccessToken accessToken = wxService.getOAuth2Service().getAccessToken(code);

@@ -26,6 +26,13 @@ public class CursorPageBaseResp<T> {
     @ApiModelProperty("数据列表")
     private List<T> list;
 
+    /**
+     * 游标初始化
+     * @param cursorPage
+     * @param list
+     * @return
+     * @param <T>
+     */
     public static <T> CursorPageBaseResp<T> init(CursorPageBaseResp cursorPage, List<T> list) {
         CursorPageBaseResp<T> cursorPageBaseResp = new CursorPageBaseResp<T>();
         cursorPageBaseResp.setIsLast(cursorPage.getIsLast());

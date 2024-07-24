@@ -9,6 +9,7 @@ import com.hyh.mallchat.common.common.domain.vo.resp.CursorPageBaseResp;
 import com.hyh.mallchat.common.common.utils.CursorUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -21,6 +22,13 @@ import java.util.Objects;
  */
 @Service
 public class MessageDao extends ServiceImpl<MessageMapper, Message> {
+
+    public Integer getUnReadCount(Long roomId, Date readTime) {
+        return lambdaQuery()
+                .eq(Message::getRoomId,roomId)
+                .gt(Objects.nonNull(readTime),Message::getCreateTime,readTime)
+                .count();
+    }
 
     public CursorPageBaseResp<Message> getCursorPage(Long roomId, ChatMessagePageReq request, Long lastMsgId){
         return CursorUtils.getCursorPageByMysql(this, request, wrapper -> {

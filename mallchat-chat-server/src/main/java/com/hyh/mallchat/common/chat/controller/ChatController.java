@@ -2,27 +2,22 @@ package com.hyh.mallchat.common.chat.controller;
 
 
 import com.hyh.mallchat.common.chat.dao.MessageDao;
-import com.hyh.mallchat.common.chat.domain.entity.msg.MsgRecall;
-import com.hyh.mallchat.common.chat.domain.vo.req.ChatMessageBaseReq;
-import com.hyh.mallchat.common.chat.domain.vo.req.ChatMessageMarkReq;
-import com.hyh.mallchat.common.chat.domain.vo.req.ChatMessagePageReq;
-import com.hyh.mallchat.common.chat.domain.vo.req.ChatMessageReq;
+import com.hyh.mallchat.common.chat.domain.dto.MsgReadInfoDTO;
+import com.hyh.mallchat.common.chat.domain.vo.req.*;
+import com.hyh.mallchat.common.chat.domain.vo.resp.ChatMessageReadResp;
 import com.hyh.mallchat.common.chat.domain.vo.resp.ChatMessageResp;
 import com.hyh.mallchat.common.chat.service.ChatService;
-import com.hyh.mallchat.common.common.domain.vo.req.CursorPageBaseReq;
 import com.hyh.mallchat.common.common.domain.vo.resp.ApiResult;
 import com.hyh.mallchat.common.common.domain.vo.resp.CursorPageBaseResp;
 import com.hyh.mallchat.common.common.utils.RequestHolder;
-import com.hyh.mallchat.common.user.domain.dto.MsgRecallDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.validation.Valid;
+import java.util.Collection;
 
 /**
  * <p>
@@ -69,6 +64,21 @@ public class ChatController {
         chatService.setMsgMark(RequestHolder.getRequestInfo().getUid(),req);
         return ApiResult.success();
     }
-
+    @PutMapping("/msg/read")
+    @ApiOperation("阅读上报")
+    public ApiResult<Void> readMsg(@RequestBody @Valid ChatMessageMemberReq req){
+        chatService.readMsg(RequestHolder.getRequestInfo().getUid(),req);
+        return ApiResult.success();
+    }
+    @GetMapping("/msg/read/page")
+    @ApiOperation("消息已读未读列表")
+    public ApiResult<CursorPageBaseResp<ChatMessageReadResp>> readOrUnReadPage(@RequestBody @Valid ChatMessageReadReq req){
+        return ApiResult.success( chatService.getReadOrUnReadPage(RequestHolder.getRequestInfo().getUid(),req));
+    }
+    @GetMapping("/msg/read")
+    @ApiOperation("消息已读未读数")
+    public ApiResult<Collection<MsgReadInfoDTO>> readOrUnReadCount(@RequestBody @Valid ChatMessageReadInfoReq req){
+        return ApiResult.success(chatService.readOrUnReadCount(RequestHolder.getRequestInfo().getUid(),req));
+    }
 }
 

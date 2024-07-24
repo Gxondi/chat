@@ -60,6 +60,7 @@ public class WxMsgServiceImpl implements WxMsgService {
         String openId = wxMpXmlMessage.getFromUser();
         //获取事件code
         Integer code = this.getEventKey(wxMpXmlMessage);
+        System.out.println("code:" + code);
         if (ObjectUtils.isEmpty(code)) {
             return null;
         }
@@ -78,8 +79,6 @@ public class WxMsgServiceImpl implements WxMsgService {
             //注册用户往数据库内添加数据
             User insert = UserAdapter.buildUserSave(openId);
             Long register = userService.register(insert);
-
-
         }
         //等待用户授权过程中临时保存openId和code的映射关系
         WAIT_AUTHORIZE_MAP.put(openId, code);

@@ -970,6 +970,8 @@ public class RedisUtils {
     }
 
     /**
+     * 从上往下翻滚获取
+     * 游标到最小
      * @param key
      * @param max
      * @param pageSize

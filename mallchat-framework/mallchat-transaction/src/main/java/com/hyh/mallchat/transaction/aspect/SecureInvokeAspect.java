@@ -46,8 +46,9 @@ public class SecureInvokeAspect {
         }
         //获取方法，参数，类名等信息
         Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        //获取每个参数的全限定名
         List<String> parameters = Stream.of(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
-        //构建DTO
+        //构建DTO，执行失败重试的时候，利用次类进行匹配
         SecureInvokeDTO build = SecureInvokeDTO.builder()
                 .className(method.getDeclaringClass().getName())
                 .methodName(method.getName())
@@ -60,6 +61,7 @@ public class SecureInvokeAspect {
                 .maxRetryTimes(secureInvoke.maxRetryTimes())
                 .nextRetryTime(DateUtil.offsetMinute(new Date(), (int) SecureInvokeService.RETRY_INTERVAL_MINUTES))
                 .build();
+        //
         secureInvokeService.invoke(async, record);
         return null;
     }

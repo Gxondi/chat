@@ -52,12 +52,13 @@ public class WebSocketServiceImpl implements WebSocketService {
     public static final int MAXIMUM_SIZE = 1000;
     public static final Duration DURATION = Duration.ofHours(1);
     /**
-     * 保存用户channel（临时/登录）
+     * 管理所有用户连接，登录/未登录
      */
     private final static ConcurrentMap<Channel, WSChannelExtraDTO> ONLINE_WS_MAP = new ConcurrentHashMap<>();
     /**
      * 临时保存code和channel的映射关系
      * 用户一直扫码，会导致oom，使用本地缓存
+     *
      */
     Cache<Integer, Channel> WAIT_LOGIN_MAP = Caffeine.newBuilder().maximumSize(MAXIMUM_SIZE).expireAfterWrite(DURATION).build();
 
@@ -140,7 +141,24 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     }
 
+    private Integer generateLoginCode(Channel channel) {
+        int code;
+        do {
+            code = RandomUtil.randomInt(Integer.MAX_VALUE);
 
+        } while (!Objects.isNull(WAIT_LOGIN_MAP.asMap().putIfAbsent(code, channel)));
+        System.out.println("code:" + code);
+        /**
+         * WAIT_LOGIN_MAP.asMap().putIfAbsent(code, channel))
+         * 返回值
+         * 如果所指定的 key 已经在 HashMap 中存在，返回和这个 key 值对应的 value, 如果所指定的 key 不在 HashMap 中存在，则返回 null。
+         * 注意：如果指定 key 之前已经和一个 null 值相关联了 ，则该方法也返回 null。
+         */
+        //将code和channel的映射关系保存到本地缓存
+        WAIT_LOGIN_MAP.put(code, channel);
+
+        return code;
+    }
     /**
      * 扫码登录成功
      *
@@ -195,6 +213,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             sendMsg(channel, WebSocketAdapter.buildInvalidTokenResp());
         }
     }
+
 
     @Override
     public void sendMsgToAll(WSBaseResp<?> msg) {
@@ -276,21 +295,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(resp)));
     }
 
-    private Integer generateLoginCode(Channel channel) {
-        int code;
-        do {
-            code = RandomUtil.randomInt(Integer.MAX_VALUE);
 
-        } while (!Objects.isNull(WAIT_LOGIN_MAP.asMap().putIfAbsent(code, channel)));
-        /**
-         * WAIT_LOGIN_MAP.asMap().putIfAbsent(code, channel))
-         * 返回值
-         * 如果所指定的 key 已经在 HashMap 中存在，返回和这个 key 值对应的 value, 如果所指定的 key 不在 HashMap 中存在，则返回 null。
-         * 注意：如果指定 key 之前已经和一个 null 值相关联了 ，则该方法也返回 null。
-         */
-        //将code和channel的映射关系保存到本地缓存
-        WAIT_LOGIN_MAP.put(code, channel);
-        return code;
-    }
 
 }

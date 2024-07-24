@@ -50,7 +50,7 @@ public class MPGenerator {
         strategyConfig.setEntityLombokModel(true);
         //包，列的命名规则，使用驼峰规则
         strategyConfig.setNaming(NamingStrategy.underline_to_camel);
-//        strategyConfig.setTablePrefix("t_");
+//      strategyConfig.setTablePrefix("t_");
         strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel);
         //字段和表注解
         strategyConfig.setEntityTableFieldAnnotationEnable(true);
@@ -65,7 +65,7 @@ public class MPGenerator {
         list.add(tableFill1);
         list.add(tableFill2);
 
-//        strategyConfig.setTableFillList(list);
+//      strategyConfig.setTableFillList(list);
         autoGenerator.setStrategy(strategyConfig);
 
         //执行

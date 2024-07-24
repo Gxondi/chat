@@ -17,4 +17,6 @@ public interface IRoomService {
     RoomFriend createFriendRoom(List<Long> list);
 
     void destroyFriendRoom(List<Long> list);
+
+    RoomFriend getRoomByFriendUid(long friendUid, long uid);
 }

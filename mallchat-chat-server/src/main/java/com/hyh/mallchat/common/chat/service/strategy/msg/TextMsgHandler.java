@@ -132,7 +132,7 @@ public class TextMsgHandler extends AbstractMsgHandler<TextMsgReq> {
 
     @Override
     public String showContactMsg(Message msg) {
-        return null;
+        return msg.getContent();
     }
 
 
